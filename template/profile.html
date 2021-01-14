@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+
+{% block title %}HABSE - 个人中心{% endblock %}
+
+{% block sidebar %}/ Home / 个人中心{% endblock %}
+
+{% block content %}
+    <div class="row">
+          <div class="col-md-3">
+            <!-- Profile Image -->
+            <div class="box box-primary">
+              <div class="box-body box-profile">
+                <img class="profile-user-img img-responsive img-circle" src="{{ MEDIA_URL }}{{ request.user.image }}" alt="User profile picture">
+
+                <h3 class="profile-username text-center">{{ request.real_name }}</h3>
+
+                <p class="text-muted text-center">{{ request.user.title }}</p>
+
+                <ul class="list-group list-group-unbordered">
+                  <li class="list-group-item">
+                    <b>手机</b> <a class="pull-right">{{ request.user.mobile }}</a>
+                  </li>
+                  <li class="list-group-item">
+                    <b>邮箱</b> <a class="pull-right">{{ request.user.email }}</a>
+                  </li>
+                  <li class="list-group-item">
+                    <b>部门</b> <a class="pull-right">{{ request.user.department }}</a>
+                  </li>
+                </ul>
+                <a data-toggle="modal" data-target="#modify_pwd_dialog" class="btn btn-primary btn-block"><b>修改密码</b></a>
+              </div>
+              <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+          </div>
+    </div>
+
+
+    <!--model modify_pwd start-->
+    <div class="modal fade" id="modify_pwd_dialog">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close close-modifypwd-btn" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title">修改密码</h4>
+            </div>
+            <div class="modal-body">
+              <form class="form-horizontal">
+                <div class="box-body">
+                   <div class="form-group">
+                        <label for="password" class="col-sm-2 control-label">原密码</label>
+                        <div class="col-sm-10">
+                          <input type="password" class="form-control" name="oldpwd" />
+                        </div>
+                   </div>
+
+                  <div class="form-group">
+                        <label for="password" class="col-sm-2 control-label">新密码</label>
+                        <div class="col-sm-10">
+                          <input type="password" class="form-control" name="pwd1" placeholder="建议长度6位或以上，包含大写字母，小写字母，数字，特殊符号">
+                        </div>
+                  </div>
+
+                  <div class="form-group">
+                        <label for="password" class="col-sm-2 control-label">确认密码</label>
+                        <div class="col-sm-10">
+                          <input type="password" class="form-control" name="pwd2" placeholder="建议长度6位或以上，包含大写字母，小写字母，数字，特殊符号">
+                        </div>
+                  </div>
+
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default pull-left close-modifypwd-btn" data-dismiss="modal">取消</button>
+              <button type="button" class="btn btn-primary" id="save-modifypwd-btn">提交</button>
+            </div>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+    <!-- /.modal-dialog -->
+    </div>
+{% endblock %}
+
+
+{% block custom_js %}
+<script>
+$(function () {
+    $("#save-modifypwd-btn").click(function (event) {
+        event.preventDefault();
+        var diglog = $('#modify_pwd_dialog');
+        var oldpwdInput = $("input[name='oldpwd']");
+        var pwd1Input = $("input[name='pwd1']");
+        var pwd2Input = $("input[name='pwd2']");
+
+        var oldpwd = oldpwdInput.val();
+        var pwd1 = pwd1Input.val();
+        var pwd2 = pwd2Input.val();
+
+        var pwd_pattern = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,}$/;
+
+
+
+
+        // 校验新密码是否一致
+        if( pwd1 !== pwd2) {
+            swal({
+                title: '密码错误',
+                type: "error",
+                text: "新密码输入不一致",
+                timer: 3000,
+                showConfirmButton: false
+            });
+            oldpwdInput.val("");
+            pwd1Input.val("");
+            pwd2Input.val("");
+            return false;
+        }
+
+        sajax.post({
+            url: '{% url 'modifypwd' %}',
+            data: {
+                oldpwd: oldpwd,
+                pwd1: pwd1,
+                pwd2: pwd2
+            },
+            'success': function (data) {
+                if(data['code'] == 200){
+                    diglog.modal('hide');
+                    oldpwdInput.val("");
+                    pwd1Input.val("");
+                    pwd2Input.val("");
+                    swal({
+                        title: '成功',
+                        type: "success",
+                        text: "修改密码成功",
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                } else {
+                    swal({
+                        title: '错误',
+                        type: "error",
+                        text: data['message'],
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                }
+            }
+        });
+    });
+
+    //关闭按钮
+    $(".close-modifypwd-btn").click(function (event) {
+        event.preventDefault();
+        var oldpwdInput = $("input[name='oldpwd']");
+        var pwd1Input = $("input[name='pwd1']");
+        var pwd2Input = $("input[name='pwd2']");
+
+        oldpwdInput.val("");
+        pwd1Input.val("");
+        pwd2Input.val("");
+    })
+});
+</script>
+{% endblock %}
+
+
+

@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>登录-HBASA运维平台</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'bootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="{% static 'css/signin.css' %}" rel="stylesheet">
+  </head>
+
+  <body>
+    <div class="container out-box">
+      <form class="form-signin"  action="{% url 'login' %}" method="post" >
+        {% if msg %}
+            <div class="alert alert-danger" role="alert" style="text-align: center">{{ msg }}</div>
+        {% endif %}
+
+        <h2 class="form-signin-heading" align="center">欢迎访问HBA<span style="color: red;">SA</span></h2>
+        <div class="form-group">
+            <label for="inputUsername" class="sr-only">邮箱</label>
+            <input type="text" class="form-control" placeholder="用户名或邮箱" required autofocus name="username">
+        </div>
+
+        <div class="form-group">
+            <label for="inputPassword" class="sr-only">密码</label>
+            <input type="password" class="form-control" placeholder="密码" required name="password">
+        </div>
+		<!--
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" value="1" name="remember"> 记住我
+          </label>
+        </div>
+		-->
+        <button class="btn btn-lg btn-primary btn-block" type="submit">立即登录</button>
+        {% csrf_token %}
+      </form>
+    </div> 
+  </body>
+</html>
